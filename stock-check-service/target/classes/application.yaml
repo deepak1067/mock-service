@@ -1,0 +1,5 @@
+threadPool:
+  corePoolSize: 50
+  maximumPoolSize: 200
+  keepAliveThread: 0
+  maxAwaitTermination: 1200
