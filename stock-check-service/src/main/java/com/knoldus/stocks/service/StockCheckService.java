@@ -8,5 +8,5 @@ import java.util.concurrent.ExecutionException;
 
 public interface StockCheckService {
 
-    public StockCheckResponse executeStockCheckByStockId(StockCheckRequest stockCheckRequest) throws InterruptedException, ExecutionException;
+    public void executeStockCheckByStockId(StockCheckRequest stockCheckRequest) throws InterruptedException, ExecutionException;
 }

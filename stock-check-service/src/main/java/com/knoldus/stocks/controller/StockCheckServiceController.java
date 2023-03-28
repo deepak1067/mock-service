@@ -24,8 +24,8 @@ public class StockCheckServiceController {
         this.stockCheckService = stockCheckService;
     }
     @PostMapping("/stockCount")
-    public StockCheckResponse executeStockCheckById(@RequestBody @Valid StockCheckRequest stockCheckRequest) throws ExecutionException, InterruptedException {
-        return stockCheckService.executeStockCheckByStockId(stockCheckRequest);
-        //return new ResponseEntity<>("OK", HttpStatus.OK);
+    public ResponseEntity<String> executeStockCheckById(@RequestBody @Valid StockCheckRequest stockCheckRequest) throws ExecutionException, InterruptedException {
+        stockCheckService.executeStockCheckByStockId(stockCheckRequest);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }

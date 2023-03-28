@@ -38,7 +38,7 @@ public class StockCheckServiceImpl implements StockCheckService {
         return new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveThread, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
     }
     @Override
-    public StockCheckResponse executeStockCheckByStockId(StockCheckRequest stockCheckRequest) {
+    public void executeStockCheckByStockId(StockCheckRequest stockCheckRequest) {
         ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
         List<StockCheckTask> stockCheckTasks = StockUtil.getTaskList(stockCheckRequest, restTemplate);
         log.info(String.format("Processing execution for %d stocks : Stock Id %s ", stockCheckTasks.size(), stockCheckRequest.getStockIds()));
@@ -47,6 +47,10 @@ public class StockCheckServiceImpl implements StockCheckService {
             log.info("Executing Shutdown to wait till all task complete before shutdown.");
             executorService.shutdown();
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            Thread.sleep(4000);
+            log.info("Going to sleep for 4 sec");
+
+//            System.out.println("Virtual thread is working!");
         } catch (Exception e) {
             log.info("Exception while processing, can't proceed, executing shutdownNow.");
             executorService.shutdownNow();
@@ -61,6 +65,5 @@ public class StockCheckServiceImpl implements StockCheckService {
 //            log.info("Exception while processing, can't proceed, executing shutdownNow.");
 //            Thread.currentThread().interrupt();
 //        }
-        return new StockCheckResponse(200, "Fetching all stock details successful");
     }
 }
