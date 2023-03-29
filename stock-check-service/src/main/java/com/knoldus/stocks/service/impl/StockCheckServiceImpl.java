@@ -43,27 +43,32 @@ public class StockCheckServiceImpl implements StockCheckService {
         List<StockCheckTask> stockCheckTasks = StockUtil.getTaskList(stockCheckRequest, restTemplate);
         log.info(String.format("Processing execution for %d stocks : Stock Id %s ", stockCheckTasks.size(), stockCheckRequest.getStockIds()));
         try {
-            stockCheckTasks.forEach(task -> executorService.submit(task::call));
+            stockCheckTasks.forEach(task -> {
+                executorService.submit(() -> {
+                    try {
+                        Thread.sleep(1000);
+                        task.call();
+                    }
+                    catch (Exception e) {
+                        log.error("Exception", e);
+                    }
+                });
+            });
             log.info("Executing Shutdown to wait till all task complete before shutdown.");
+
             executorService.shutdown();
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             Thread.sleep(4000);
             log.info("Going to sleep for 4 sec");
+            log.info(String.format("Thread Name: %s ", Thread.currentThread()));
+            log.info(String.format("Thread Count: %d ",Thread.activeCount()));
 
-//            System.out.println("Virtual thread is working!");
+
         } catch (Exception e) {
             log.info("Exception while processing, can't proceed, executing shutdownNow.");
             executorService.shutdownNow();
-//            Thread.currentThread().isAlive();
             Thread.currentThread().interrupt();
 
         }
-//        try {
-//            Thread.startVirtualThread(() -> stockCheckTasks.forEach(StockCheckTask::call))
-//                    .onClose(() -> log.info("Executing Shutdown to wait till all task complete before shutdown."));
-//        } catch (Exception e) {
-//            log.info("Exception while processing, can't proceed, executing shutdownNow.");
-//            Thread.currentThread().interrupt();
-//        }
     }
 }
